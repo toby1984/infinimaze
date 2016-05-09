@@ -15,8 +15,8 @@ public class SimpleScreen extends JPanel implements IScreen {
 	private BufferedImage buffer;
 	private Graphics2D graphics;
 	
-	private int tileWidth=4; // in pixels
-	private int tileHeight=6; // in pixels
+	protected static final int DEFAULT_TILE_WIDTH = 4;
+	protected static final int DEFAULT_TILE_HEIGHT = 6;
 	
 	private final VisibleChunks visibleChunks;
 	
@@ -81,6 +81,9 @@ public class SimpleScreen extends JPanel implements IScreen {
 			final float cy = getHeight()/2f;
 			
 			World world = visibleChunks.world;
+			
+			final int tileWidth = Math.round (DEFAULT_TILE_WIDTH  * world.camera.zoom);
+			final int tileHeight= Math.round (DEFAULT_TILE_HEIGHT * world.camera.zoom);
 			
 			final float offsetX = world.camera.cameraX * tileWidth;
 			final float offsetY = -world.camera.cameraY * tileHeight;

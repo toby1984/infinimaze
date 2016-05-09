@@ -13,6 +13,8 @@ public class Camera
 	public float cameraX; 
 	public float cameraY;
 	
+	public float zoom = 1f;
+	
 	public boolean changed = true;
 	
 	public Camera(ChunkKey currentChunk) {
@@ -44,5 +46,13 @@ public class Camera
 		}		
 		System.out.println("Camera: "+this);
 		changed =true;
+	}
+	
+	public void zoom(float delta) {
+		final float newZoom = zoom + delta;
+		if ( newZoom > 0 ) {
+			zoom = newZoom;
+			changed = true;
+		}
 	}
 }

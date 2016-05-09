@@ -19,7 +19,9 @@ public class InputHandler
 		UP,
 		LEFT,
 		RIGHT,
-		DOWN;
+		DOWN,
+		ZOOM_IN,
+		ZOOM_OUT
 	}
 	
 	public InputHandler(World world) {
@@ -37,6 +39,8 @@ public class InputHandler
 					case KeyEvent.VK_D: pressed.add( Key.RIGHT); break; 
 					case KeyEvent.VK_W: pressed.add( Key.UP ); break; 
 					case KeyEvent.VK_S: pressed.add( Key.DOWN ); break;
+					case KeyEvent.VK_PLUS: pressed.add( Key.ZOOM_IN); break;
+					case KeyEvent.VK_MINUS: pressed.add( Key.ZOOM_OUT); break;
 					default: 
 						// $$FALL-THROUGH$$
 				}
@@ -49,6 +53,8 @@ public class InputHandler
 					case KeyEvent.VK_D: pressed.remove( Key.RIGHT); break; 
 					case KeyEvent.VK_W: pressed.remove( Key.UP ); break; 
 					case KeyEvent.VK_S: pressed.remove( Key.DOWN ); break;
+					case KeyEvent.VK_PLUS: pressed.remove( Key.ZOOM_IN); break;
+					case KeyEvent.VK_MINUS: pressed.remove( Key.ZOOM_OUT); break;
 					default: 
 						// $$FALL-THROUGH$$
 				}
@@ -68,5 +74,10 @@ public class InputHandler
 		} else if ( pressed.contains(Key.RIGHT) ) {
 			world.camera.translate(TRANS_X*deltaSeconds,0);
 		}		
+		if ( pressed.contains( Key.ZOOM_IN ) ) {
+			world.camera.zoom( deltaSeconds );
+		} else if ( pressed.contains( Key.ZOOM_OUT ) ) {
+			world.camera.zoom( -deltaSeconds );
+		}
 	}
 }
