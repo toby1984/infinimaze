@@ -88,8 +88,8 @@ public class SimpleScreen extends JPanel implements IScreen {
 			final float offsetX = world.camera.cameraX * tileWidth;
 			final float offsetY = -world.camera.cameraY * tileHeight;
 			
-			final float centerChunkTopLeftX = cx - Chunk.HALF_CHUNK_WIDTH*tileWidth   - tileWidth  / 2f - offsetX; 
-			final float centerChunkTopLeftY = cy - Chunk.HALF_CHUNK_HEIGHT*tileHeight - tileHeight / 2f - offsetY;
+			final float centerChunkTopLeftX = cx - Chunk.HALF_WIDTH*tileWidth   - tileWidth  / 2f - offsetX; 
+			final float centerChunkTopLeftY = cy - Chunk.HALF_HEIGHT*tileHeight - tileHeight / 2f - offsetY;
 			
 			final List<Chunk> visibleChunks2 = visibleChunks.getVisibleChunks();
 			for ( Chunk chunk : visibleChunks2 ) 
@@ -97,23 +97,23 @@ public class SimpleScreen extends JPanel implements IScreen {
 				final int chunkDx = world.camera.currentChunk.x - chunk.key.x;
 				final int chunkDy = world.camera.currentChunk.y - chunk.key.y;
 				
-				final float chunkTopLeftX = centerChunkTopLeftX - chunkDx * Chunk.CHUNK_WIDTH  * tileWidth;
-				final float chunkTopLeftY = centerChunkTopLeftY + chunkDy * Chunk.CHUNK_HEIGHT * tileHeight;
+				final float chunkTopLeftX = centerChunkTopLeftX - chunkDx * Chunk.WIDTH  * tileWidth;
+				final float chunkTopLeftY = centerChunkTopLeftY + chunkDy * Chunk.HEIGHT * tileHeight;
 
-				for ( int y = 0 ; y < Chunk.CHUNK_HEIGHT ; y++ ) 
+				for ( int y = 0 ; y < Chunk.HEIGHT ; y++ ) 
 				{				
 					final float py = chunkTopLeftY + y * tileHeight;
-					for ( int x = 0 ; x <  Chunk.CHUNK_WIDTH ; x++ ) 
+					for ( int x = 0 ; x <  Chunk.WIDTH ; x++ ) 
 					{
 						final float px = chunkTopLeftX + x * tileWidth;
-						final Tile tile = chunk.getTile( x - Chunk.HALF_CHUNK_WIDTH , Chunk.HALF_CHUNK_HEIGHT - y );
+						final Tile tile = chunk.getTile( x - Chunk.HALF_WIDTH , Chunk.HALF_HEIGHT - y );
 						tile.setup( ctx );
 						tile.render( ctx , (int) px , (int) py , tileWidth , tileHeight );
 					}
 				}
 				ctx.setColor( Color.RED );
 				ctx.drawRect( (int) chunkTopLeftX , (int) chunkTopLeftY , 
-						Chunk.CHUNK_WIDTH * tileWidth , Chunk.CHUNK_HEIGHT * tileHeight );
+						Chunk.WIDTH * tileWidth , Chunk.HEIGHT * tileHeight );
 			}
 			
 			ctx.setColor( Color.RED );

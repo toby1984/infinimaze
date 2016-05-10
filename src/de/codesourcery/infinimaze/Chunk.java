@@ -13,10 +13,10 @@ import java.util.Arrays;
  */
 public class Chunk 
 {
-	public static final int CHUNK_WIDTH=31; // needs to be an ODD number so that tile (0,0) is the center tile
-	public static final int CHUNK_HEIGHT=31; // needs to be an ODD number so that tile (0,0) is the center tile
-	public static final int HALF_CHUNK_WIDTH=CHUNK_WIDTH/2; 
-	public static final int HALF_CHUNK_HEIGHT=CHUNK_HEIGHT/2; 
+	public static final int WIDTH=31; // needs to be an ODD number so that tile (0,0) is the center tile
+	public static final int HEIGHT=31; // needs to be an ODD number so that tile (0,0) is the center tile
+	public static final int HALF_WIDTH=WIDTH/2; 
+	public static final int HALF_HEIGHT=HEIGHT/2; 
 	
 	protected static final class ChunkKey 
 	{
@@ -62,7 +62,49 @@ public class Chunk
 	
 	public final ChunkKey key;
 	
-	public final Tile[] tiles;
+	public static final class TileArray 
+	{
+		public Tile[] tiles;
+		
+		public TileArray() {
+			tiles = new Tile[ WIDTH*HEIGHT ];
+			Arrays.fill( tiles ,  Tile.ROCK );
+		}
+		
+		public TileArray(TileArray other) 
+		{
+			tiles = new Tile[ WIDTH*HEIGHT ];
+			populateFrom(other);
+		}		
+		
+		public void populateFrom(TileArray other) 
+		{
+			System.arraycopy( other.tiles , 0 , this.tiles , 0 , other.tiles.length );
+		}
+		
+		public Tile getTile(int x,int y) 
+		{
+			return tiles[ptr(x,y)];
+		}
+		
+		public TileArray createCopy() {
+			return new TileArray(this);
+		}
+		
+		public static int ptr(int x,int y) {
+			return (y+HALF_HEIGHT)*WIDTH+(x+HALF_WIDTH);
+		}
+		
+		public void setTile(int x,int y,Tile t) 
+		{
+			if ( t == null ) {
+				throw new IllegalArgumentException("tile must not be NULL");
+			}
+			tiles[ptr(x,y)] = t;
+		}	
+	}
+	
+	public TileArray tiles = new TileArray();
 	
 	public Chunk(ChunkKey key)
 	{
@@ -70,25 +112,16 @@ public class Chunk
 			throw new IllegalArgumentException("key must not be NULL");
 		}
 		this.key = key;
-		tiles = new Tile[ CHUNK_WIDTH*CHUNK_HEIGHT ];
-		Arrays.fill( tiles ,  Tile.EMPTY );
 	}
 	
 	public Tile getTile(int x,int y) 
 	{
-		return tiles[ptr(x,y)];
-	}
-	
-	private static int ptr(int x,int y) {
-		return (y+HALF_CHUNK_HEIGHT)*CHUNK_WIDTH+(x+HALF_CHUNK_WIDTH);
+		return tiles.getTile(x,y);
 	}
 	
 	public void setTile(int x,int y,Tile t) 
 	{
-		if ( t == null ) {
-			throw new IllegalArgumentException("tile must not be NULL");
-		}
-		tiles[ptr(x,y)] = t;
+		tiles.setTile(x, y, t);
 	}	
 	
 	@Override

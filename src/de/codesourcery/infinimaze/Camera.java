@@ -29,22 +29,21 @@ public class Camera
 	public void translate(float dx, float dy) 
 	{
 		cameraX += dx;
-		if ( cameraX > Chunk.CHUNK_WIDTH/2f ) {
+		if ( cameraX > Chunk.WIDTH/2f ) {
 			currentChunk.x++;
-			cameraX -= Chunk.CHUNK_WIDTH;
-		} else if ( cameraX < -Chunk.CHUNK_WIDTH/2f ) {
+			cameraX -= Chunk.WIDTH;
+		} else if ( cameraX < -Chunk.WIDTH/2f ) {
 			currentChunk.x--;
-			cameraX += Chunk.CHUNK_WIDTH;
+			cameraX += Chunk.WIDTH;
 		}
 		cameraY += dy;
-		if ( cameraY > Chunk.CHUNK_HEIGHT/2f ) {
+		if ( cameraY > Chunk.HEIGHT/2f ) {
 			currentChunk.y++;
-			cameraY -= Chunk.CHUNK_HEIGHT;
-		} else if ( cameraY < -Chunk.CHUNK_HEIGHT/2f ) {
+			cameraY -= Chunk.HEIGHT;
+		} else if ( cameraY < -Chunk.HEIGHT/2f ) {
 			currentChunk.y--;
-			cameraY += Chunk.CHUNK_HEIGHT;
+			cameraY += Chunk.HEIGHT;
 		}		
-		System.out.println("Camera: "+this);
 		changed =true;
 	}
 	
