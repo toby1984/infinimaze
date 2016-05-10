@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Random;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -16,7 +17,7 @@ public class Main extends JFrame
 	private final Camera camera = new Camera( new ChunkKey(0,0 ) );	
 	private final IChunkProvider chunkProvider = new RandomChunkProvider();
 	private final World world = new World( camera );
-	private final InputHandler inputHandler = new InputHandler( world );	
+	private final InputHandler inputHandler = new InputHandler( world , chunkProvider );	
 	private SimpleScreen screen;
 	
 	public Main() {
@@ -30,6 +31,16 @@ public class Main extends JFrame
 
 	private void run() 
 	{
+		Chunk chunk = chunkProvider.getChunk( camera.currentChunk );
+		if ( chunk.getTile( (int) camera.cameraX , (int) camera.cameraY ) != Tile.EMPTY ) 
+		{
+			final Random rnd = new Random( 0xdeadbeef );
+			do {
+				camera.cameraX = -Chunk.HALF_WIDTH + rnd.nextInt( Chunk.WIDTH ); 
+				camera.cameraY = -Chunk.HALF_HEIGHT + rnd.nextInt( Chunk.HEIGHT );
+			} while ( chunk.getTile( (int) camera.cameraX , (int) camera.cameraY ) != Tile.EMPTY );
+		}
+		
 		screen = new SimpleScreen( new VisibleChunks(world , chunkProvider ) );
 		screen.setFocusable( true );
 		screen.setRequestFocusEnabled( true );

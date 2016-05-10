@@ -14,6 +14,7 @@ public class InputHandler
 	
 	private final Set<Key> pressed = new HashSet<>();
 	private final World world;
+	private final IChunkProvider chunkProvider;
 	
 	public static enum Key {
 		UP,
@@ -24,8 +25,9 @@ public class InputHandler
 		ZOOM_OUT
 	}
 	
-	public InputHandler(World world) {
+	public InputHandler(World world,IChunkProvider chunkProvider) {
 		this.world = world;
+		this.chunkProvider = chunkProvider;
 	}
 	
 	public void attach(JComponent component) 
@@ -65,14 +67,14 @@ public class InputHandler
 	public void tick(float deltaSeconds) 
 	{
 		if ( pressed.contains(Key.UP ) ) {
-			world.camera.translate(0,TRANS_Y*deltaSeconds);
+			world.camera.translate(0,TRANS_Y*deltaSeconds,chunkProvider);
 		} else if ( pressed.contains(Key.DOWN ) ) {
-			world.camera.translate(0,TRANS_Y*-deltaSeconds);
+			world.camera.translate(0,TRANS_Y*-deltaSeconds,chunkProvider);
 		}
 		if ( pressed.contains(Key.LEFT) ) {
-			world.camera.translate(TRANS_X*-deltaSeconds,0);
+			world.camera.translate(TRANS_X*-deltaSeconds,0,chunkProvider);
 		} else if ( pressed.contains(Key.RIGHT) ) {
-			world.camera.translate(TRANS_X*deltaSeconds,0);
+			world.camera.translate(TRANS_X*deltaSeconds,0,chunkProvider);
 		}		
 		if ( pressed.contains( Key.ZOOM_IN ) ) {
 			world.camera.zoom( deltaSeconds );

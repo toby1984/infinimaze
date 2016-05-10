@@ -13,7 +13,7 @@ public class Camera
 	public float cameraX; 
 	public float cameraY;
 	
-	public float zoom = 1f;
+	public float zoom = 3f;
 	
 	public boolean changed = true;
 	
@@ -26,25 +26,42 @@ public class Camera
 		return "Chunk "+currentChunk+" , tile "+cameraX+","+cameraY;
 	}
 
-	public void translate(float dx, float dy) 
+	public boolean translate(float dx, float dy,IChunkProvider provider) 
 	{
-		cameraX += dx;
-		if ( cameraX > Chunk.WIDTH/2f ) {
-			currentChunk.x++;
-			cameraX -= Chunk.WIDTH;
-		} else if ( cameraX < -Chunk.WIDTH/2f ) {
-			currentChunk.x--;
-			cameraX += Chunk.WIDTH;
+		float newX = cameraX;
+		float newY = cameraY;
+		int chunkX = currentChunk.x;
+		int chunkY = currentChunk.y;
+		
+		newX += dx;
+		if ( newX > Chunk.WIDTH/2f ) {
+			chunkX++;
+			newX -= Chunk.WIDTH;
+		} else if ( newX < -Chunk.WIDTH/2f ) {
+			chunkX--;
+			newX += Chunk.WIDTH;
 		}
-		cameraY += dy;
-		if ( cameraY > Chunk.HEIGHT/2f ) {
-			currentChunk.y++;
-			cameraY -= Chunk.HEIGHT;
-		} else if ( cameraY < -Chunk.HEIGHT/2f ) {
-			currentChunk.y--;
-			cameraY += Chunk.HEIGHT;
+		newY += dy;
+		if ( newY > Chunk.HEIGHT/2f ) {
+			chunkY++;
+			newY -= Chunk.HEIGHT;
+		} else if ( newY < -Chunk.HEIGHT/2f ) {
+			chunkY--;
+			newY += Chunk.HEIGHT;
 		}		
-		changed =true;
+		
+		final Chunk chunk = provider.getChunk( chunkX ,chunkY );
+		
+		if ( chunk.getTile( (int) newX , (int) newY ) == Tile.EMPTY ) {
+			cameraX = newX;
+			cameraY = newY;
+			currentChunk.x = chunkX;
+			currentChunk.y = chunkY;
+			
+			changed =true;
+			return true;
+		}
+		return false;
 	}
 	
 	public void zoom(float delta) {

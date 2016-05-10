@@ -9,15 +9,17 @@ public enum Tile
 	{
 		@Override
 		public void setup(Graphics2D ctx) {
-			ctx.setColor(Color.GRAY);
+			ctx.setColor(Color.BLACK);
 		}		
 	},
 	EMPTY 
 	{
 		public void setup(Graphics2D ctx) {
-			ctx.setColor(Color.BLACK);
+			ctx.setColor( BROWN );
 		}
 	};
+	
+	private static final Color BROWN = new Color(Integer.parseInt( "911717" , 16 ) );
 	
 	public abstract void setup(Graphics2D ctx);
 	

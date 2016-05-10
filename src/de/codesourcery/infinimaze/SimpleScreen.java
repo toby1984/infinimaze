@@ -15,6 +15,8 @@ public class SimpleScreen extends JPanel implements IScreen {
 	private BufferedImage buffer;
 	private Graphics2D graphics;
 	
+	protected static final boolean DEBUG_RENDER = false;
+	
 	protected static final int DEFAULT_TILE_WIDTH = 4;
 	protected static final int DEFAULT_TILE_HEIGHT = 6;
 	
@@ -106,22 +108,36 @@ public class SimpleScreen extends JPanel implements IScreen {
 					for ( int x = 0 ; x <  Chunk.WIDTH ; x++ ) 
 					{
 						final float px = chunkTopLeftX + x * tileWidth;
-						final Tile tile = chunk.getTile( x - Chunk.HALF_WIDTH , Chunk.HALF_HEIGHT - y );
+						final int tileX = x - Chunk.HALF_WIDTH;
+						final int tileY = Chunk.HALF_HEIGHT - y;
+						final Tile tile = chunk.getTile( tileX , tileY );
+						
+						if ( chunk.key.equals( world.camera.currentChunk ) ) {
+							if ( tileX == (int) world.camera.cameraX && tileY == (int) world.camera.cameraY ) {
+								ctx.setColor(Color.BLUE);
+								ctx.fillRect( (int) px , (int) py , tileWidth , tileHeight );
+								continue;
+							}
+						}
 						tile.setup( ctx );
 						tile.render( ctx , (int) px , (int) py , tileWidth , tileHeight );
 					}
 				}
-				ctx.setColor( Color.RED );
-				ctx.drawRect( (int) chunkTopLeftX , (int) chunkTopLeftY , 
-						Chunk.WIDTH * tileWidth , Chunk.HEIGHT * tileHeight );
+				if ( DEBUG_RENDER ) {
+					ctx.setColor( Color.RED );
+					ctx.drawRect( (int) chunkTopLeftX , (int) chunkTopLeftY , 
+							Chunk.WIDTH * tileWidth , Chunk.HEIGHT * tileHeight );
+				}
 			}
 			
 			ctx.setColor( Color.RED );
 			ctx.drawString( world.camera.toString() , 15 ,15 );
 			
-			ctx.setColor(Color.RED);
-			ctx.drawLine( (int) (cx - 5) , (int) cy     ,  (int) (cx+5) , (int) cy );
-			ctx.drawLine( (int) cx       , (int) (cy-5) ,  (int) cx   , (int) (cy+5) );			
+			if ( DEBUG_RENDER ) {
+				ctx.setColor(Color.RED);
+				ctx.drawLine( (int) (cx - 5) , (int) cy     ,  (int) (cx+5) , (int) cy );
+				ctx.drawLine( (int) cx       , (int) (cy-5) ,  (int) cx   , (int) (cy+5) );
+			}
 		});
 		repaint();
 		Toolkit.getDefaultToolkit().sync();

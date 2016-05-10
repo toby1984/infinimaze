@@ -66,7 +66,22 @@ public class RandomChunkProvider implements IChunkProvider
 		}
 	}
 	
+	private interface IntPredicate 
+	{
+		public boolean test(int x,int y);
+	}
+	
 	private static void countRockNeighbours(TileArray array,int[] result) 
+	{
+		countNeighbours( array , result , (nx,ny) -> array.getTile( nx , ny ) == Tile.ROCK );
+	}
+	
+	private static void countEmptyNeighbours(TileArray array,int[] result) 
+	{
+		countNeighbours( array , result , (nx,ny) -> array.getTile( nx , ny ) == Tile.EMPTY );
+	}	
+	
+	private static void countNeighbours(TileArray array,int[] result,IntPredicate predicate) 
 	{
 		final Direction[] dirs = Direction.values();
 		final int len = dirs.length;
@@ -83,7 +98,7 @@ public class RandomChunkProvider implements IChunkProvider
 					final int ny = y+ dir.dy;
 					if ( nx >= -Chunk.HALF_WIDTH && ny >= -Chunk.HALF_HEIGHT && nx <= Chunk.HALF_WIDTH && ny <= Chunk.HALF_HEIGHT ) 
 					{
-						if ( array.getTile( nx , ny ) == Tile.ROCK ) 
+						if ( predicate.test(nx,ny) ) 
 						{
 							neighbours++;
 						}
@@ -97,9 +112,9 @@ public class RandomChunkProvider implements IChunkProvider
 	{
 		final Chunk result = new Chunk(key);
 		
-		long x = key.x;
-		long y = key.y;
-		final long seed = (31+31*x)*31+y*31;
+		long sx = key.x;
+		long sy = key.y;
+		final long seed = (31+31*sx)*31+sy*31;
 		
 		final XSRandom rnd = new XSRandom(~seed*2);
 		
@@ -110,14 +125,13 @@ public class RandomChunkProvider implements IChunkProvider
 		
 		final int[] neighbours = new int[ Chunk.WIDTH*Chunk.HEIGHT];
 		
-		TileArray tmp1 = result.tiles;
 		TileArray tmp2 = new TileArray();
 		
 		int generations = 0;
 		int cellsChanged = 0;
 		do
 		{
-			tmp2.populateFrom( tmp1 );
+			tmp2.populateFrom( result.tiles );
 			countRockNeighbours( tmp2 , neighbours );
 			// In the former, this means that cells survive from one generation to the next if they have at least one and at most five neighbours.
 			for ( int i = 0 ; i < Chunk.WIDTH*Chunk.HEIGHT ; i++) 
@@ -132,11 +146,42 @@ public class RandomChunkProvider implements IChunkProvider
 					}
 				} 
 			}
-			TileArray tmp = tmp1;
-			tmp1 = tmp2;
+			TileArray tmp = result.tiles;
+			result.tiles = tmp2;
 			tmp2 = tmp;
 			generations++;
-		} while ( cellsChanged != 0 && generations < 200 );
+		} while ( cellsChanged != 0 && generations < 300 );
+		
+		// cleanup
+		for ( int j = 0 ; j < 1 ; j++) {
+			countRockNeighbours( result.tiles , neighbours );
+			for ( int i = 0 ; i < Chunk.WIDTH*Chunk.HEIGHT ; i++) 
+			{
+				if ( result.tiles.tiles[i] == Tile.ROCK && neighbours[ i ] <= 2 ) {
+					result.tiles.tiles[i] = Tile.EMPTY;
+				}
+			}
+		}
+		
+		// flood-fill
+//		boolean out = false;
+//		for ( int y = -Chunk.HALF_HEIGHT ; y <= Chunk.HALF_HEIGHT ; y++ ) 
+//		{
+//			for ( int x = -Chunk.HALF_WIDTH; x <= Chunk.HALF_WIDTH; x++ ) 
+//			{
+//				if ( x == 0 ) {
+//					out = result.getTile( x , y ) == Tile.EMPTY;
+//				} 
+//				else 
+//				{
+//					if ( result.getTile( x , y ) != Tile.EMPTY ) {
+//						out = ! out;
+//					} else if ( ! out ) {
+//						result.setTile(x,y,Tile.ROCK);
+//					}
+//				}
+//			}
+//		}
 		return result;
 	}
 }
