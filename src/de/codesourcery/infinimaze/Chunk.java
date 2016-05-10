@@ -18,6 +18,27 @@ public class Chunk
 	public static final int HALF_WIDTH=WIDTH/2; 
 	public static final int HALF_HEIGHT=HEIGHT/2; 
 	
+	public static enum Flag 
+	{
+		DIRTY(1);
+		
+		private final int bitMask;
+		
+		private Flag(int bitMask) {
+			this.bitMask = bitMask;
+		}
+		public final boolean isSet(int value) {
+			return (value & bitMask) != 0;
+		}
+		
+		public final int set(int value) {
+			return (value | bitMask);
+		}	
+		
+		public final int clear(int value) {
+			return (value & ~bitMask);
+		}		
+	}
 	protected static final class ChunkKey 
 	{
 		public int x;
@@ -61,6 +82,7 @@ public class Chunk
 	}	
 	
 	public final ChunkKey key;
+	public int flags;
 	
 	public static final class TileArray 
 	{
@@ -128,4 +150,30 @@ public class Chunk
 	public String toString() {
 		return "Chunk "+key;
 	}
+	
+	public boolean isSet(Flag flag) {
+		return flag.isSet( this.flags );
+	}
+	
+	public void set(Flag flag) {
+		this.flags = flag.set( this.flags );
+	}	
+	
+	public void clear(Flag flag) {
+		this.flags = flag.clear( this.flags );
+	}	
+	
+	public boolean isDirty() {
+		return isSet(Flag.DIRTY);
+	}
+	
+	public void markDirty() 
+	{
+		set(Flag.DIRTY);
+	}
+	
+	public void clearDirty() 
+	{
+		clear(Flag.DIRTY);
+	}	
 }

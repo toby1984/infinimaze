@@ -3,6 +3,7 @@ package de.codesourcery.infinimaze;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Random;
 
@@ -15,7 +16,8 @@ import de.codesourcery.infinimaze.Chunk.ChunkKey;
 public class Main extends JFrame
 {
 	private final Camera camera = new Camera( new ChunkKey(0,0 ) );	
-	private final IChunkProvider chunkProvider = new RandomChunkProvider();
+	private final IChunkStorage storage = new FileChunkStorage( new File("/home/tgierke/tmp/chunks").toPath() );  
+	private final IChunkProvider chunkProvider = new RandomChunkProvider(storage);
 	private final World world = new World( camera );
 	private final InputHandler inputHandler = new InputHandler( world , chunkProvider );	
 	private SimpleScreen screen;

@@ -37,15 +37,23 @@ public class VisibleChunks
 
 	private void updateVisibleChunks() 
 	{
-		chunks = new ArrayList<>( TOTAL_VISIBLE_CHUNKS );
+		final List<Chunk> newChunks = new ArrayList<>( TOTAL_VISIBLE_CHUNKS );
 		
 		for ( int x = world.camera.currentChunk.x - RENDER_DISTANCE_IN_CHUNKS , maxX= world.camera.currentChunk.x + RENDER_DISTANCE_IN_CHUNKS ; x <= maxX ; x++ ) 
 		{
 			for ( int y = world.camera.currentChunk.y + RENDER_DISTANCE_IN_CHUNKS , minY = world.camera.currentChunk.y - RENDER_DISTANCE_IN_CHUNKS ; y >= minY ; y-- ) 
 			{
-				chunks.add( chunkProvider.getChunk( x , y ) );
+				final Chunk newChunk = chunkProvider.getChunk( x , y );
+				newChunks.add( newChunk );
 			}			
 		}
+		for ( Chunk chunk : chunks ) 
+		{
+			if ( ! newChunks.contains( chunk ) ) {
+				chunkProvider.unload( chunk );
+			}
+		}
+		chunks = newChunks;
 	}
 	
 }

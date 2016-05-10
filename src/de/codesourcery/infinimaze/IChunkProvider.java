@@ -7,4 +7,6 @@ public interface IChunkProvider
 	public Chunk getChunk(ChunkKey key);
 	
 	public Chunk getChunk(int chunkX,int chunkY);
+
+	public void unload(Chunk chunk);
 }
