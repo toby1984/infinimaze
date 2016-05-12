@@ -1,3 +1,18 @@
+/**
+ * Copyright 2016 Tobias Gierke <tobias.gierke@code-sourcery.de>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package de.codesourcery.infinimaze;
 
 import java.awt.Color;
@@ -33,6 +48,7 @@ public class SimpleScreen extends JPanel implements IScreen {
 			throw new IllegalArgumentException("visibleChunks must not be NULL");
 		}
 		this.visibleChunks = visibleChunks;
+		setDoubleBuffered(false);
 	}
 	
 	private void render(IRenderFunc func) 
@@ -73,7 +89,7 @@ public class SimpleScreen extends JPanel implements IScreen {
 	}
 	
 	@Override
-	public void render() 
+	public void render(float deltaSeconds) 
 	{
 		render( (ctx,width,height) -> 
 		{
@@ -132,7 +148,8 @@ public class SimpleScreen extends JPanel implements IScreen {
 			}
 			
 			ctx.setColor( Color.RED );
-			ctx.drawString( world.camera.toString() , 15 ,15 );
+			final float fps = (int) (1.0f/deltaSeconds);
+			ctx.drawString( world.camera.toString()+" , "+fps+" FPS [ hit CTRL-F to toggle debug rendering mode ]" , 15 ,15 );
 			
 			if ( debugRendering ) {
 				ctx.setColor(Color.RED);
