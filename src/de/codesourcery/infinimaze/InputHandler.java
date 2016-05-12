@@ -2,6 +2,7 @@ package de.codesourcery.infinimaze;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,23 +16,40 @@ public class InputHandler
 	private final Set<Key> pressed = new HashSet<>();
 	private final World world;
 	private final IChunkProvider chunkProvider;
+	private final IScreen screen;
 	
 	public static enum Key {
 		UP,
 		LEFT,
 		RIGHT,
 		DOWN,
+		MOUSE_ZOOM_IN,
+		MOUSE_ZOOM_OUT,
 		ZOOM_IN,
-		ZOOM_OUT
+		ZOOM_OUT,
+		TOGGLE_DEBUG_MODE;
 	}
 	
-	public InputHandler(World world,IChunkProvider chunkProvider) {
+	public InputHandler(World world,IChunkProvider chunkProvider,IScreen screen) {
 		this.world = world;
 		this.chunkProvider = chunkProvider;
+		this.screen = screen;
 	}
 	
 	public void attach(JComponent component) 
 	{
+		component.addMouseWheelListener( new MouseAdapter() {
+			
+			public void mouseWheelMoved(java.awt.event.MouseWheelEvent e) 
+			{
+				final int clicks = e.getWheelRotation();
+				if ( clicks > 0 ) {
+					pressed.add( Key.MOUSE_ZOOM_IN );
+				} else {
+					pressed.add( Key.MOUSE_ZOOM_OUT );
+				}
+			}
+		} );
 		component.addKeyListener( new KeyAdapter() 
 		{
 			public void keyPressed(java.awt.event.KeyEvent e) 
@@ -43,6 +61,11 @@ public class InputHandler
 					case KeyEvent.VK_S: pressed.add( Key.DOWN ); break;
 					case KeyEvent.VK_PLUS: pressed.add( Key.ZOOM_IN); break;
 					case KeyEvent.VK_MINUS: pressed.add( Key.ZOOM_OUT); break;
+					case KeyEvent.VK_F:
+						if ( (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK ) != 0 ) {
+							pressed.add( Key.TOGGLE_DEBUG_MODE );
+						}
+						break;
 					default: 
 						// $$FALL-THROUGH$$
 				}
@@ -57,6 +80,7 @@ public class InputHandler
 					case KeyEvent.VK_S: pressed.remove( Key.DOWN ); break;
 					case KeyEvent.VK_PLUS: pressed.remove( Key.ZOOM_IN); break;
 					case KeyEvent.VK_MINUS: pressed.remove( Key.ZOOM_OUT); break;
+					case KeyEvent.VK_F: pressed.remove(Key.TOGGLE_DEBUG_MODE); break;
 					default: 
 						// $$FALL-THROUGH$$
 				}
@@ -66,6 +90,7 @@ public class InputHandler
 	
 	public void tick(float deltaSeconds) 
 	{
+		// movement
 		if ( pressed.contains(Key.UP ) ) {
 			world.camera.translate(0,TRANS_Y*deltaSeconds,chunkProvider);
 		} else if ( pressed.contains(Key.DOWN ) ) {
@@ -76,10 +101,25 @@ public class InputHandler
 		} else if ( pressed.contains(Key.RIGHT) ) {
 			world.camera.translate(TRANS_X*deltaSeconds,0,chunkProvider);
 		}		
+		
+		// zoom
 		if ( pressed.contains( Key.ZOOM_IN ) ) {
 			world.camera.zoom( deltaSeconds );
 		} else if ( pressed.contains( Key.ZOOM_OUT ) ) {
 			world.camera.zoom( -deltaSeconds );
+		} else if ( pressed.contains( Key.MOUSE_ZOOM_IN ) ) {
+			world.camera.zoom( deltaSeconds*4 );
+			pressed.remove( Key.MOUSE_ZOOM_IN );
+		} else if ( pressed.contains( Key.MOUSE_ZOOM_OUT ) ) {
+			world.camera.zoom( -deltaSeconds*4 );
+			pressed.remove( Key.MOUSE_ZOOM_OUT );
+		}
+		
+		// misc
+		if ( pressed.contains( Key.TOGGLE_DEBUG_MODE ) ) {
+			System.out.println("Toggle");
+			screen.setDebugRendering( ! screen.isDebugRendering() );
+			pressed.remove( Key.TOGGLE_DEBUG_MODE );
 		}
 	}
 }

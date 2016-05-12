@@ -16,10 +16,10 @@ import de.codesourcery.infinimaze.Chunk.ChunkKey;
 public class Main extends JFrame
 {
 	private final Camera camera = new Camera( new ChunkKey(0,0 ) );	
-	private final IChunkStorage storage = new FileChunkStorage( new File("/home/tgierke/tmp/chunks").toPath() );  
+	private final IChunkStorage storage = new FileChunkStorage( new File("/home/tobi/tmp/chunks").toPath() );  
 	private final IChunkProvider chunkProvider = new RandomChunkProvider(storage);
 	private final World world = new World( camera );
-	private final InputHandler inputHandler = new InputHandler( world , chunkProvider );	
+	private InputHandler inputHandler;
 	private SimpleScreen screen;
 	
 	public Main() {
@@ -47,6 +47,7 @@ public class Main extends JFrame
 		screen.setFocusable( true );
 		screen.setRequestFocusEnabled( true );
 		screen.requestFocus();
+		inputHandler = new InputHandler( world , chunkProvider , screen );
 		
 		getContentPane().setLayout(new GridBagLayout());
 		final GridBagConstraints cnstrs = new GridBagConstraints();

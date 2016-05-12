@@ -15,10 +15,11 @@ public class SimpleScreen extends JPanel implements IScreen {
 	private BufferedImage buffer;
 	private Graphics2D graphics;
 	
-	protected static final boolean DEBUG_RENDER = false;
 	
 	protected static final int DEFAULT_TILE_WIDTH = 4;
 	protected static final int DEFAULT_TILE_HEIGHT = 6;
+	
+	protected boolean debugRendering = false;
 	
 	private final VisibleChunks visibleChunks;
 	
@@ -113,7 +114,7 @@ public class SimpleScreen extends JPanel implements IScreen {
 						final Tile tile = chunk.getTile( tileX , tileY );
 						
 						if ( chunk.key.equals( world.camera.currentChunk ) ) {
-							if ( tileX == (int) world.camera.cameraX && tileY == (int) world.camera.cameraY ) {
+							if ( tileX == Math.round( world.camera.cameraX ) && tileY == Math.round( world.camera.cameraY ) ) {
 								ctx.setColor(Color.BLUE);
 								ctx.fillRect( (int) px , (int) py , tileWidth , tileHeight );
 								continue;
@@ -123,7 +124,7 @@ public class SimpleScreen extends JPanel implements IScreen {
 						tile.render( ctx , (int) px , (int) py , tileWidth , tileHeight );
 					}
 				}
-				if ( DEBUG_RENDER ) {
+				if ( debugRendering ) {
 					ctx.setColor( Color.RED );
 					ctx.drawRect( (int) chunkTopLeftX , (int) chunkTopLeftY , 
 							Chunk.WIDTH * tileWidth , Chunk.HEIGHT * tileHeight );
@@ -133,7 +134,7 @@ public class SimpleScreen extends JPanel implements IScreen {
 			ctx.setColor( Color.RED );
 			ctx.drawString( world.camera.toString() , 15 ,15 );
 			
-			if ( DEBUG_RENDER ) {
+			if ( debugRendering ) {
 				ctx.setColor(Color.RED);
 				ctx.drawLine( (int) (cx - 5) , (int) cy     ,  (int) (cx+5) , (int) cy );
 				ctx.drawLine( (int) cx       , (int) (cy-5) ,  (int) cx   , (int) (cy+5) );
@@ -141,5 +142,15 @@ public class SimpleScreen extends JPanel implements IScreen {
 		});
 		repaint();
 		Toolkit.getDefaultToolkit().sync();
+	}
+
+	@Override
+	public void setDebugRendering(boolean yesNo) {
+		this.debugRendering = yesNo;
+	}
+
+	@Override
+	public boolean isDebugRendering() {
+		return debugRendering;
 	}	
 }

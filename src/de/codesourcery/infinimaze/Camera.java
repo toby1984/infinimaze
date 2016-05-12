@@ -52,7 +52,7 @@ public class Camera
 		
 		final Chunk chunk = provider.getChunk( chunkX ,chunkY );
 		
-		if ( chunk.getTile( (int) newX , (int) newY ) == Tile.EMPTY ) {
+		if ( chunk.getTile( Math.round( newX ) , Math.round( newY ) ) == Tile.EMPTY ) {
 			cameraX = newX;
 			cameraY = newY;
 			currentChunk.x = chunkX;

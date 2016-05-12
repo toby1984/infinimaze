@@ -10,6 +10,8 @@ import de.codesourcery.infinimaze.Chunk.TileArray;
 
 public abstract class AbstractChunkProvider implements IChunkProvider 
 {
+	public static final boolean SERIALIZE_CHUNKS = false;
+	
 	private static final class ChunkMap 
 	{
 		private final Map<ChunkKey,Chunk> toUnload = new HashMap<>();
@@ -62,17 +64,20 @@ public abstract class AbstractChunkProvider implements IChunkProvider
 	
 	private Chunk loadChunk(ChunkKey key) 
 	{
-		Chunk chunk = null;
-		try {
-			chunk = storage.load( key );
-		} 
-		catch (IOException e) 
+		if ( SERIALIZE_CHUNKS ) 
 		{
-			throw new RuntimeException(e);
-		}
-		
-		if ( chunk != null ) {
-			return chunk;
+			Chunk chunk = null;
+			try {
+				chunk = storage.load( key );
+			} 
+			catch (IOException e) 
+			{
+				throw new RuntimeException(e);
+			}
+			
+			if ( chunk != null ) {
+				return chunk;
+			}
 		}
 		return createChunk( key );
 	}
